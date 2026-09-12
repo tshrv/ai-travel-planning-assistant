@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Ingest",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "python": "${command:python.interpreterPath}",
+            "console": "integratedTerminal",
+            "args": "sync-location-data singapore"
+        }
+    ]
+}

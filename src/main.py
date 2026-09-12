@@ -5,6 +5,9 @@ from pathlib import Path
 import html2text
 import typer
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import (
     MarkdownHeaderTextSplitter,
     RecursiveCharacterTextSplitter,
@@ -72,7 +75,26 @@ def download_content(location_name: str, label: str, url: str, uid: str) -> Path
 
 def ingest_contents(sources: list[Source]):
     """Read markdown files, chunk and ingest into storage"""
+    chunks = build_chunks(sources)
+    embeddings = HuggingFaceEmbeddings(
+        # TODO: benchmark BGE-M3 vs BGE-large
+        # model_name="BAAI/bge-m3",
+        model_name="BAAI/bge-large-en-v1.5",
+        model_kwargs={"device": "cuda"},
+        encode_kwargs={"normalize_embeddings": True},
+    )
+    vector_store = QdrantVectorStore.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        url="http://localhost:6333",
+        collection_name="ai_travel_planning_assistant",
+    )
+
+
+def build_chunks(sources: list[Source]) -> list[Document]:
+    """Read markdown files and generate chunks"""
     ln_sources = len(sources)
+    all_chunks: list[Document] = []
     for i, source in enumerate(sources):
         logger.info(
             f"processing {i}/{ln_sources}: source_id {source.source_id}, source_url {source.url}"
@@ -97,18 +119,22 @@ def ingest_contents(sources: list[Source]):
                 chunk_size=1000, chunk_overlap=150
             )
             final_chunks = text_splitter.split_documents(header_splits)
+            ln_final_chunks = len(final_chunks)
 
             # inject metadata into all chunks
             for i, chunk in enumerate(final_chunks):
                 chunk.metadata["chunk_id"] = f"{source.uid}_{source.source_id}_{i}"
-                chunk.metadata["uid"] = source.uid
                 chunk.metadata["source_id"] = source.source_id
+                chunk.metadata["chunk_index"] = i
+                chunk.metadata["total_chunks"] = ln_final_chunks
+                chunk.metadata["uid"] = source.uid
                 chunk.metadata["location_name"] = source.name
                 chunk.metadata["label"] = source.label
                 chunk.metadata["source_url"] = source.url
                 chunk.metadata["file_path"] = str(source.file_path)
 
-            # process final_chunks
+            all_chunks.extend(final_chunks)
+    return all_chunks
 
 
 @app.command()
@@ -147,10 +173,37 @@ def sync_location_data(
         file_path = download_content(name, label.lower(), url, uid)
         sources.append(Source(uid, i, name, label, url, file_path))
 
-    # ingestion
+    # ingest
     ingest_contents(sources)
 
     logger.info(f'sync completed for "{name}"')
+
+
+@app.command()
+def query(query: str):
+    """Search query"""
+    embeddings = HuggingFaceEmbeddings(
+        # TODO: benchmark BGE-M3 vs BGE-large
+        # model_name="BAAI/bge-m3",
+        model_name="BAAI/bge-large-en-v1.5",
+        model_kwargs={"device": "cuda"},
+        encode_kwargs={"normalize_embeddings": True},
+    )
+    vector_store = QdrantVectorStore.from_existing_collection(
+        embedding=embeddings,
+        url="http://localhost:6333",
+        collection_name="ai_travel_planning_assistant",
+    )
+
+    results = vector_store.similarity_search_with_score(
+        query=query,
+        k=5,
+    )
+    for doc, score in results:
+        print(score)
+        print(doc.page_content)
+        print(doc.metadata)
+        print("*" * 50)
 
 
 if __name__ == "__main__":

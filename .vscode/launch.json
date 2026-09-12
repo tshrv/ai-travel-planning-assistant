@@ -9,6 +9,15 @@
             "python": "${command:python.interpreterPath}",
             "console": "integratedTerminal",
             "args": "sync-location-data singapore"
+        },
+        {
+            "name": "Query",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "python": "${command:python.interpreterPath}",
+            "console": "integratedTerminal",
+            "args": "query \"Best places to eat in singapore?\""
         }
     ]
 }

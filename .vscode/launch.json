@@ -11,13 +11,13 @@
             "args": "sync-location-data singapore"
         },
         {
-            "name": "Search vectors",
+            "name": "RAG Search",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/src/main.py",
             "python": "${command:python.interpreterPath}",
             "console": "integratedTerminal",
-            "args": "search-vectors"
+            "args": "rag-search"
         }
     ]
 }

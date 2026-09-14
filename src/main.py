@@ -2,7 +2,7 @@ import typer
 from loguru import logger
 
 import ingestion
-import search
+from rag import RAG
 from utils.time import get_current_timestamp
 
 app = typer.Typer()
@@ -24,20 +24,22 @@ def sync_location_data(
 
 
 @app.command()
-def search_vectors():
-    """Mode: search vector store"""
+def rag_search():
+    """Search RAG results on query"""
     logger.info("Search Vectors")
+    rag = RAG()
     while True:
-        phrase = input("> Enter search phrase: ")
-        results = search.search(phrase=phrase)
+        query = input("> Enter search phrase: ")
+        results = rag.search(query=query)
         print("\n-----RESULTS-----\n")
-        for i, (doc, score) in enumerate(results, start=1):
+        for i, result in enumerate(results, start=1):
             print(f"#{i}")
-            print("- score:", score)
+            print("- vector score:", result.vector_score)
+            print("- rerank score:", result.rerank_score)
             print("- metadata:")
-            print(doc.metadata)
+            print(result.document.metadata)
             print("- page content:")
-            print(doc.page_content)
+            print(result.document.page_content)
             print("\n")
 
 

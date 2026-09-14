@@ -8,6 +8,8 @@ from utils.time import get_current_timestamp
 app = typer.Typer()
 from rich import print
 
+from agent import rag_chain
+
 
 @app.command()
 def sync_location_data(
@@ -26,7 +28,6 @@ def sync_location_data(
 @app.command()
 def rag_search():
     """Search RAG results on query"""
-    logger.info("Search Vectors")
     rag = RAG()
     while True:
         query = input("> Enter search phrase: ")
@@ -41,6 +42,15 @@ def rag_search():
             print("- page content:")
             print(result.document.page_content)
             print("\n")
+
+
+@app.command()
+def agent():
+    logger.info("Hi, how can I help you?")
+    while True:
+        user_input = input(">> ")
+        resp = rag_chain.invoke(user_input)
+        print(resp)
 
 
 if __name__ == "__main__":

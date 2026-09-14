@@ -1,10 +1,11 @@
 import time
 
+from langchain_core.retrievers import BaseRetriever
 from loguru import logger
 from sentence_transformers import CrossEncoder
 
 from config import settings
-from models import RAGResult
+from models import Document, RAGResult
 from vector_store import get_vector_store
 
 
@@ -67,3 +68,9 @@ class RAG:
                 : settings.reranked_search_results_limit
             ]
         ]
+
+
+class RAGRetriever(BaseRetriever):
+    def _get_relevant_documents(self, query: str) -> Document:
+        results = RAG().search(query)
+        return [result.document for result in results]

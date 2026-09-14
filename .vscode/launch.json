@@ -18,6 +18,15 @@
             "python": "${command:python.interpreterPath}",
             "console": "integratedTerminal",
             "args": "rag-search"
+        },
+        {
+            "name": "Agent",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main.py",
+            "python": "${command:python.interpreterPath}",
+            "console": "integratedTerminal",
+            "args": "agent"
         }
     ]
 }

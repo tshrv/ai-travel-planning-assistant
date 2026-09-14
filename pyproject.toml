@@ -4,4 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "html2text>=2025.4.15",
+    "langchain>=1.4.0",
+    "langchain-community>=0.4.2",
+    "langchain-huggingface>=1.2.2",
+    "langchain-qdrant>=1.1.0",
+    "loguru>=0.7.3",
+    "playwright>=1.62.0",
+    "sentence-transformers>=6.0.1",
+    "typer>=0.27.2",
+]

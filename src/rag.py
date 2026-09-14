@@ -14,7 +14,7 @@ class RAG:
         self._reranker = None
 
     def _get_reranker(self) -> CrossEncoder:
-        if self._reranker == None:
+        if self._reranker is None:
             logger.info("initializing reranker")
             t = time.perf_counter()
             self._reranker = CrossEncoder(
@@ -31,41 +31,39 @@ class RAG:
             query,
             k=settings.similarity_search_results_limit,
         )
-        pairs = [
-            (query, doc.page_content) for doc, vector_score in similarity_search_results
-        ]
-        logger.info(f"similarity search results found: {len(pairs)}")
+        logger.info(
+            f"similarity search results found: {len(similarity_search_results)}"
+        )
 
         if settings.reranking_enabled:
             logger.info("reranking")
+            pairs = [
+                (query, doc.page_content)
+                for doc, vector_score in similarity_search_results
+            ]
+
             reranker = self._get_reranker()
             _t = time.perf_counter()
             rerank_scores = reranker.predict(
                 pairs, batch_size=settings.reranking_batch_size
             )
             logger.info(f"reranking completed in {time.perf_counter() - _t} sec")
-        else:
-            rerank_scores = [
-                None for _ in range(settings.similarity_search_results_limit)
-            ]
 
-        results = zip(similarity_search_results, rerank_scores)
-
-        if settings.reranking_enabled:
             logger.info("filtering best results based on new ranks")
-            results = sorted(
-                results,
+            ranked_results = sorted(
+                zip(similarity_search_results, rerank_scores),
                 key=lambda x: x[1],
                 reverse=True,
             )
-        results = list(results)
-        rag_results: list[RAGResult] = []
-        for (doc, vector_score), rerank_score in results[
-            : settings.reranked_search_results_limit
-        ]:
-            rag_results.append(
-                RAGResult(
-                    document=doc, vector_score=vector_score, rerank_score=rerank_score
-                )
+
+        else:
+            ranked_results = [(result, None) for result in similarity_search_results]
+
+        return [
+            RAGResult(
+                document=doc, vector_score=vector_score, rerank_score=rerank_score
             )
-        return rag_results
+            for (doc, vector_score), rerank_score in ranked_results[
+                : settings.reranked_search_results_limit
+            ]
+        ]

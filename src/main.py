@@ -47,7 +47,9 @@ def rag_search():
 @app.command()
 def agent():
     try:
-        logger.info("Agent online")
+        conversation_id = get_current_timestamp()
+        config = {"configurable": {"thread_id": conversation_id}}
+        logger.info(f"Agent online (conversation id {conversation_id})")
         while True:
             user_input = input("User : ")
             result = tp_agent.invoke(
@@ -58,7 +60,8 @@ def agent():
                             "content": user_input,
                         }
                     ]
-                }
+                },
+                config=config,
             )
 
             print(result["messages"][-1].content)

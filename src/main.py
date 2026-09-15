@@ -8,7 +8,7 @@ from utils.time import get_current_timestamp
 app = typer.Typer()
 from rich import print
 
-from agent import rag_chain
+from agent import tp_agent
 
 
 @app.command()
@@ -46,11 +46,27 @@ def rag_search():
 
 @app.command()
 def agent():
-    logger.info("Hi, how can I help you?")
-    while True:
-        user_input = input(">> ")
-        resp = rag_chain.invoke(user_input)
-        print(resp)
+    try:
+        logger.info("Agent online")
+        while True:
+            user_input = input("User : ")
+            result = tp_agent.invoke(
+                {
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": user_input,
+                        }
+                    ]
+                }
+            )
+
+            print(result["messages"][-1].content)
+            pass
+    except KeyboardInterrupt:
+        logger.success("Shutting down agent")
+    except Exception as e:
+        logger.error(f"{e}")
 
 
 if __name__ == "__main__":

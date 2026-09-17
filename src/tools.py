@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from langchain.tools import tool
 from loguru import logger
 
@@ -21,3 +23,17 @@ Source URL: {result.document.metadata.get("source_url", "Unknown")}
         for result in results
     )
     return context
+
+
+@tool
+def datetime_now(timezone_offset_hour: int = 0, timezone_offset_minute: int = 0) -> str:
+    """Get today's date in isoformat (YYYY-MM-DD). Provide timezone_offset_hour and timezone_offset_minute (both default to 0) for specific timezone"""
+    logger.info(
+        f"fetchign today's date: offset_hour {timezone_offset_hour}, offset_minute {timezone_offset_minute}"
+    )
+    dt = datetime.now(
+        tz=timezone(
+            offset=timedelta(hours=timezone_offset_hour, minutes=timezone_offset_minute)
+        )
+    )
+    return dt.date().isoformat()

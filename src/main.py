@@ -1,14 +1,15 @@
+import asyncio
+
 import typer
 from loguru import logger
+from rich import print
 
 import ingestion
+from agent import create_travel_planner_agent
 from rag import RAG
 from utils.time import get_current_timestamp
 
 app = typer.Typer()
-from rich import print
-
-from agent import tp_agent
 
 
 @app.command()
@@ -46,13 +47,19 @@ def rag_search():
 
 @app.command()
 def agent():
+    asyncio.run(_agent())
+
+
+async def _agent():
     try:
         conversation_id = get_current_timestamp()
         config = {"configurable": {"thread_id": conversation_id}}
         logger.info(f"Agent online (conversation id {conversation_id})")
+        tp_agent = await create_travel_planner_agent()
+
         while True:
             user_input = input("User : ")
-            result = tp_agent.invoke(
+            result = await tp_agent.ainvoke(
                 {
                     "messages": [
                         {

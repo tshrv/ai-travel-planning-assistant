@@ -22,5 +22,8 @@ class Config(BaseSettings):
     groq_model_name: str = "qwen/qwen3.8-27b"
     groq_model_temp: float = 0.2
 
+    # mcp
+    weather_forecast_mcp_url: str = "http://localhost:8000/mcp"
+
 
 settings = Config()

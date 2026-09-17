@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/src/main.py",
             "python": "${command:python.interpreterPath}",
             "console": "integratedTerminal",
-            "args": "sync-location-data singapore"
+            "args": "extract-load-data singapore"
         },
         {
             "name": "RAG Search",

@@ -5,17 +5,15 @@ from loguru import logger
 from rich import print
 
 import ingestion
-from agent import create_travel_planner_agent
-from rag import RAG
 from utils.time import get_current_timestamp
 
 app = typer.Typer()
 
 
 @app.command()
-def sync_location_data(
+def extract_load_data(
     name: str = typer.Argument(
-        ..., help='Name of location to sync data, like "Singapore"'
+        ..., help='Name of location to load data, like "Singapore"'
     ),
 ):
     """Extract and load data from all sources for the mentioned location"""
@@ -29,6 +27,8 @@ def sync_location_data(
 @app.command()
 def rag_search():
     """Search RAG results on query"""
+    from rag.rag import RAG
+
     rag = RAG()
     while True:
         query = input("> Enter search phrase: ")
@@ -51,6 +51,8 @@ def agent():
 
 
 async def _agent():
+    from agent import create_travel_planner_agent
+
     try:
         conversation_id = get_current_timestamp()
         config = {"configurable": {"thread_id": conversation_id}}
@@ -58,7 +60,7 @@ async def _agent():
         tp_agent = await create_travel_planner_agent()
 
         while True:
-            user_input = input("User : ")
+            user_input = input("> User : ")
             result = await tp_agent.ainvoke(
                 {
                     "messages": [
@@ -70,9 +72,8 @@ async def _agent():
                 },
                 config=config,
             )
-
-            print(result["messages"][-1].content)
-            pass
+            response_message = result["messages"][-1].content
+            print("> AI:", response_message[0]["text"])
     except KeyboardInterrupt:
         logger.success("Shutting down agent")
     except Exception as e:

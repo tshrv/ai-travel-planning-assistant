@@ -6,12 +6,25 @@ from qdrant_client.http import exceptions
 from qdrant_client.models import Distance, VectorParams
 
 from config import settings
-from embeddings import get_embedddings
+from embedding.embeddings import get_embedddings
+from embedding.models import EmbeddingProvider
 
 
 def _get_client():
     """Create a client for Qdrant"""
     return QdrantClient(url=settings.vector_store_url)
+
+
+def _get_dense_vectors_size() -> int:
+    """Get dense vector size based on embedding provider and model"""
+    ep = settings.embedding_provider.value
+    dense_vectors_size_map = {
+        EmbeddingProvider.GCP: 3072,
+        EmbeddingProvider.HUGGING_FACE: 1024,
+    }
+    dense_vectors_size = dense_vectors_size_map.get(ep)
+    logger.info(f"Vector collection size {dense_vectors_size} for provider {ep}")
+    return dense_vectors_size
 
 
 def create_collection(
@@ -31,7 +44,7 @@ def create_collection(
         client.create_collection(
             collection_name=settings.vector_store_collection,
             vectors_config=VectorParams(
-                size=1024,
+                size=_get_dense_vectors_size(),
                 distance=Distance.COSINE,
             ),
         )

@@ -3,11 +3,15 @@ from typing import ClassVar
 
 from pydantic_settings import BaseSettings
 
+from embedding.models import EmbeddingProvider
+from rag.models import RerankProvider
+
 
 class Config(BaseSettings):
-    embedding_model_name: str = "BAAI/bge-m3"
-    # embedding_model_name: str = "BAAI/bge-large-en-v1.5"
-    reranker_model_name: str = "BAAI/bge-reranker-v2-m3"
+    # hugging face
+    hf_embedding_model_name: str = "BAAI/bge-m3"  # BAAI/bge-m3 | BAAI/bge-large-en-v1.5
+    hf_reranker_model_name: str = "BAAI/bge-reranker-v2-m3"
+
     similarity_search_results_limit: int = 20
     reranked_search_results_limit: int = 5
     reranking_enabled: bool = True
@@ -32,6 +36,8 @@ class Config(BaseSettings):
     gcp_location: str = "global"
     gcp_temperature: float = 0.2
     gcp_max_tokens: int = 1024
+    gcp_embedding_model_name: str = "gemini-embedding-001"
+    gcp_reranker_model_name: str = "semantic-ranker-default@latest"
 
     # mcp
     weather_forecast_mcp_url: str = "http://localhost:8000/mcp"
@@ -40,6 +46,8 @@ class Config(BaseSettings):
     # project
     root_dir: ClassVar[Path] = Path(__file__).resolve().parent.parent
     system_prompt_path: ClassVar[Path] = root_dir / "src" / "system_prompt.md"
+    embedding_provider: EmbeddingProvider = "hugging_face"  # gcp | hugging_face
+    rerank_provider: RerankProvider = "hugging_face"  # gcp | hugging_face
 
 
 settings = Config()

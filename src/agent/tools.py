@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from langchain.tools import tool
 from loguru import logger
 
-from rag import RAG
+from rag.rag import RAG
 
 rag = RAG()
 

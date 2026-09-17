@@ -4,7 +4,7 @@ import typer
 from loguru import logger
 from rich import print
 
-import ingestion
+from ingestion import ingestion
 from utils.time import get_current_timestamp
 
 app = typer.Typer()

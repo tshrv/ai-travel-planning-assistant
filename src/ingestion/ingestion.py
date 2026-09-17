@@ -10,7 +10,7 @@ from langchain_text_splitters import (
 from loguru import logger
 from playwright.async_api import async_playwright
 
-from models import Source
+from ingestion.models import Source
 from vector_store import create_collection, get_vector_store
 
 SOURCES = {

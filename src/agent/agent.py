@@ -1,10 +1,10 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 
+from agent.tools import datetime_now, search_knowledge_base
 from config import settings
 from llm.gcp import chat_gcp
 from mcp_servers.manager import create_mcp_adapter
-from tools import datetime_now, search_knowledge_base
 
 
 def get_system_prompt():

@@ -45,9 +45,9 @@ class Config(BaseSettings):
 
     # project
     root_dir: ClassVar[Path] = Path(__file__).resolve().parent.parent
-    system_prompt_path: ClassVar[Path] = root_dir / "src" / "system_prompt.md"
-    embedding_provider: EmbeddingProvider = "hugging_face"  # gcp | hugging_face
-    rerank_provider: RerankProvider = "hugging_face"  # gcp | hugging_face
+    system_prompt_path: ClassVar[Path] = root_dir / "src" / "agent" / "system_prompt.md"
+    embedding_provider: EmbeddingProvider = "gcp"  # gcp | hugging_face
+    rerank_provider: RerankProvider = "gcp"  # gcp | hugging_face
 
 
 settings = Config()

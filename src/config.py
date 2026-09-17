@@ -22,6 +22,14 @@ class Config(BaseSettings):
     groq_model_name: str = "qwen/qwen3.8-27b"
     groq_model_temp: float = 0.2
 
+    # gcp
+    gcp_api_key: str
+    gcp_project_id: str
+    gcp_model_name: str = "gemini-2.5-flash"
+    gcp_location: str = "global"
+    gcp_temperature: float = 0.2
+    gcp_max_tokens: int = 1024
+
     # mcp
     weather_forecast_mcp_url: str = "http://localhost:8000/mcp"
 

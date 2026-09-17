@@ -27,9 +27,9 @@ Source URL: {result.document.metadata.get("source_url", "Unknown")}
 
 @tool
 def datetime_now(timezone_offset_hour: int = 0, timezone_offset_minute: int = 0) -> str:
-    """Get today's date in isoformat (YYYY-MM-DD). Provide timezone_offset_hour and timezone_offset_minute (both default to 0) for specific timezone"""
+    """Get timezone aware today's date in isoformat (YYYY-MM-DD). Provide hour and minute offset as  timezone_offset_hour and timezone_offset_minute (both default to 0) for specific timezone, other than UTC"""
     logger.info(
-        f"fetchign today's date: offset_hour {timezone_offset_hour}, offset_minute {timezone_offset_minute}"
+        f"fetching today's date: offset_hour {timezone_offset_hour}, offset_minute {timezone_offset_minute}"
     )
     dt = datetime.now(
         tz=timezone(

@@ -1,7 +1,7 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 
-from llm import llm
+from llm.gcp import chat_gcp
 from mcp_servers.manager import create_mcp_adapter
 from tools import datetime_now, search_knowledge_base
 
@@ -15,7 +15,7 @@ async def create_travel_planner_agent():
         checkpointer = InMemorySaver()
 
         tp_agent = create_agent(
-            model=llm,
+            model=chat_gcp,
             tools=tools,
             system_prompt="""
         You are a travel planning assistant.

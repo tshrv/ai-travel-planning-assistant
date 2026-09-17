@@ -16,4 +16,6 @@ dependencies = [
     "sentence-transformers>=6.0.1",
     "typer>=0.27.2",
     "fastmcp>=4.0.3",
+    "google-genai>=2.24.0",
+    "langchain-google-genai>=4.4.0",
 ]

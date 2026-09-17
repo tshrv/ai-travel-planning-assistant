@@ -47,11 +47,12 @@ def rag_search():
 
 @app.command()
 def agent():
+    """Travel planner assistant"""
     asyncio.run(_agent())
 
 
 async def _agent():
-    from agent import create_travel_planner_agent
+    from agent.agent import create_travel_planner_agent
 
     try:
         conversation_id = get_current_timestamp()

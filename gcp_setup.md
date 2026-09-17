@@ -1,23 +1,57 @@
-# 1. Pick your project
-gcloud config set project YOUR_PROJECT_ID
+# Steps for GCP setup
 
-# 2. Enable Vertex AI
-gcloud services enable aiplatform.googleapis.com
+Follow steps below to set up required services and permissions from google cloud platform.
 
-# 3. Authenticate
+```sh
+export PROJECT_ID="YOUR_REAL_PROJECT_ID"
+export REGION="global"
+
+gcloud config set project "$PROJECT_ID"
+
+gcloud config get-value project
+gcloud projects describe "$PROJECT_ID"
+
+# enable requried apis
+# aiplatform.googleapis.com (GCP Agent Platform)
+# discoveryengine.googleapis.com (Google Ranking API)
+gcloud services enable \
+  aiplatform.googleapis.com \
+  discoveryengine.googleapis.com \
+  --project="$PROJECT_ID"
+
+# verify
+gcloud services list --enabled \
+  --project="$PROJECT_ID" \
+  --filter="config.name:(aiplatform.googleapis.com OR discoveryengine.googleapis.com)"
+
+# billing enbaled
+gcloud beta billing projects describe "$PROJECT_ID"
+
+# local auth - ADC
 gcloud auth application-default login
 
-# 4. Set quota project
-gcloud auth application-default set-quota-project YOUR_PROJECT_ID
+# verify
+gcloud auth application-default print-access-token
 
-# 5. Install SDK
-uv add google-genai
+# set ADC quota project
+gcloud auth application-default set-quota-project "$PROJECT_ID"
 
-# 6. Test direct Vertex AI
-uv run python test_vertex.py
+# grant role
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="user:YOUR_EMAIL@example.com" \
+  --role="roles/aiplatform.user"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member="user:YOUR_EMAIL@example.com" \
+  --role="roles/discoveryengine.viewer"
 
-# 7. Install LangChain integration
-uv add langchain-google-vertexai
+# verify iam
+gcloud projects get-iam-policy "$PROJECT_ID" \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:YOUR_EMAIL@example.com" \
+  --format="table(bindings.role)"
 
-# 8. Test LangChain
-uv run python test_llm.py
+# ranking api
+gcloud services enable \
+  discoveryengine.googleapis.com \
+  --project="$PROJECT_ID"
+```

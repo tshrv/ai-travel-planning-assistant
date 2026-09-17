@@ -1,12 +1,21 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 
+from config import settings
 from llm.gcp import chat_gcp
 from mcp_servers.manager import create_mcp_adapter
 from tools import datetime_now, search_knowledge_base
 
 
+def get_system_prompt():
+    """Get system prompt from path in config"""
+    with open(settings.system_prompt_path) as f:
+        system_prompt = f.read()
+        return system_prompt
+
+
 async def create_travel_planner_agent():
+    """Build the agent with tools and memory"""
     mcp_adapter = create_mcp_adapter()
     async with mcp_adapter:
         mcp_tools = await mcp_adapter.list_tools()
@@ -17,21 +26,7 @@ async def create_travel_planner_agent():
         tp_agent = create_agent(
             model=chat_gcp,
             tools=tools,
-            system_prompt="""
-        You are a travel planning assistant.
-        You have access to:
-        1. A knowledge base containing information about tourism data of destinations.
-        2. Tool to get today's date, can do specific timezones.
-        3. External services provided through MCP tools.
-        Use search_knowledge_base when the requested information may be available in the knowledge base.
-        You don't necessarily have to pass the exact user query to search_knowledge_base. You can formulate a better, more specific search query.
-        You may call available tools multiple times with different queries when necessary.
-        Always cite the source URL for information obtained from search_knowledge_base.
-        Use the appropriate MCP tool when the user asks for information requiring an external service, such as weather, flights, hotels, etc.
-        Do not invent information.
-        If the knowledge base does not contain enough information to answer the question, clearly say so.
-        Answer concisely and accurately.
-        """,
+            system_prompt=get_system_prompt(),
             checkpointer=checkpointer,
         )
 

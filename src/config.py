@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import ClassVar
+
 from pydantic_settings import BaseSettings
 
 
@@ -6,8 +9,8 @@ class Config(BaseSettings):
     # embedding_model_name: str = "BAAI/bge-large-en-v1.5"
     reranker_model_name: str = "BAAI/bge-reranker-v2-m3"
     similarity_search_results_limit: int = 20
-    reranked_search_results_limit: int = 3
-    reranking_enabled: bool = False
+    reranked_search_results_limit: int = 5
+    reranking_enabled: bool = True
     reranking_batch_size: int = 8  # 8/16/32
     # 8 => 150s
     # 32 => 165s
@@ -32,6 +35,11 @@ class Config(BaseSettings):
 
     # mcp
     weather_forecast_mcp_url: str = "http://localhost:8000/mcp"
+    currency_converter_mcp_url: str = "http://localhost:8001/mcp"
+
+    # project
+    root_dir: ClassVar[Path] = Path(__file__).resolve().parent.parent
+    system_prompt_path: ClassVar[Path] = root_dir / "src" / "system_prompt.md"
 
 
 settings = Config()

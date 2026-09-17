@@ -8,9 +8,8 @@ def create_mcp_config() -> dict:
     """Build config for all integrated mcp servers"""
     logger.info("building mcp config")
     servers = {
-        "weather_forecast": {
-            "url": settings.weather_forecast_mcp_url,
-        }
+        "weather_forecast": {"url": settings.weather_forecast_mcp_url},
+        "currency_conversion": {"url": settings.currency_converter_mcp_url},
     }
 
     return {

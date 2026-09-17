@@ -7,5 +7,4 @@ chat_gcp = ChatGoogleGenerativeAI(
     project=settings.gcp_project_id,
     location=settings.gcp_location,
     temperature=settings.gcp_temperature,
-    max_tokens=settings.gcp_max_tokens,
 )

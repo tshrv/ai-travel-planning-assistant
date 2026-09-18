@@ -1,13 +1,24 @@
 from pathlib import Path
 from typing import ClassVar
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from embedding.models import EmbeddingProvider
 from rag.models import RerankProvider
 
 
 class Config(BaseSettings):
+    # project
+    root_dir: ClassVar[Path] = Path(__file__).resolve().parent.parent
+    model_config = SettingsConfigDict(
+        env_file=root_dir / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+    system_prompt_path: ClassVar[Path] = root_dir / "src" / "agent" / "system_prompt.md"
+    embedding_provider: EmbeddingProvider = "gcp"  # gcp | hugging_face
+    rerank_provider: RerankProvider = "gcp"  # gcp | hugging_face
+
     # hugging face
     hf_embedding_model_name: str = "BAAI/bge-m3"  # BAAI/bge-m3 | BAAI/bge-large-en-v1.5
     hf_reranker_model_name: str = "BAAI/bge-reranker-v2-m3"
@@ -42,12 +53,6 @@ class Config(BaseSettings):
     # mcp
     weather_forecast_mcp_url: str = "http://localhost:8000/mcp"
     currency_converter_mcp_url: str = "http://localhost:8001/mcp"
-
-    # project
-    root_dir: ClassVar[Path] = Path(__file__).resolve().parent.parent
-    system_prompt_path: ClassVar[Path] = root_dir / "src" / "agent" / "system_prompt.md"
-    embedding_provider: EmbeddingProvider = "gcp"  # gcp | hugging_face
-    rerank_provider: RerankProvider = "gcp"  # gcp | hugging_face
 
 
 settings = Config()

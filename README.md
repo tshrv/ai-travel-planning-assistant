@@ -14,19 +14,7 @@ The current ingestion catalog is Singapore-only. The agent is intentionally cons
 
 ## Architecture
 
-```text
-Web sources
-	| Playwright + html2text
-	v
-Markdown files in data/<timestamp>/
-	| Markdown-aware chunking
-	v
-Embeddings -> Qdrant collection
-					|
-User query -> similarity search -> optional reranking -> agent
-													  |
-									  weather and currency MCP servers
-```
+![Architecture](design.excalidraw.png "Architectural Design")
 
 The main components are:
 

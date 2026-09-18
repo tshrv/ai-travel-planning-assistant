@@ -1,5 +1,6 @@
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
+from loguru import logger
 
 from agent.tools import datetime_now, search_knowledge_base
 from config import settings
@@ -16,6 +17,7 @@ def get_system_prompt():
 
 async def create_travel_planner_agent():
     """Build the agent with tools and memory"""
+    logger.info("creating agent")
     mcp_adapter = create_mcp_adapter()
     async with mcp_adapter:
         mcp_tools = await mcp_adapter.list_tools()
